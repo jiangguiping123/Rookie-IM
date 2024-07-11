@@ -1,6 +1,11 @@
 package com.rookie.im.user.controller;
 
 
+import com.rookie.im.user.domain.req.ImportUserReq;
+import com.rookie.im.user.service.IUserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import org.springframework.stereotype.Controller;
@@ -17,6 +22,19 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/user")
 public class UserController {
+
+        @Autowired
+        private IUserService userService;
+        @RequestMapping("/")
+        public String getUser() {
+            return userService.getUserById(1).getUserName();
+        }
+
+        @PutMapping("/import")
+        public String importUser(@RequestBody ImportUserReq req) {
+                userService.importUsers(req);
+                return "导入成功";
+        }
 
 }
 
