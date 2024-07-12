@@ -3,6 +3,7 @@ package com.rookie.im.user.service;
 import com.rookie.im.user.domain.entity.User;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.rookie.im.user.domain.req.ImportUserReq;
+import com.rookie.im.user.domain.resp.ImportUserResp;
 
 import java.util.List;
 
@@ -18,6 +19,6 @@ public interface IUserService  {
     User getUserById(Integer id);
 
 
-    void importUsers(ImportUserReq userList);
+    ImportUserResp importUsers(ImportUserReq userList);
 
 }

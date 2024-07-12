@@ -1,18 +1,23 @@
 package com.rookie.im.user.service.impl;
 
+import com.rookie.im.user.common.exception.BusinessException;
+import com.rookie.im.user.common.exception.UserExceptionEnum;
 import com.rookie.im.user.dao.UserDao;
 import com.rookie.im.user.domain.entity.User;
 import com.rookie.im.user.domain.req.ImportUserReq;
+import com.rookie.im.user.domain.resp.ImportUserResp;
 import com.rookie.im.user.service.IUserService;
 import com.rookie.im.user.service.adapter.UserAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class UserServiceImpl implements IUserService {
 
+    public static final int USER_INMPORT_MAX_LIMIT = 1;
     @Autowired
     private UserDao userDao;
 
@@ -22,10 +27,22 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public void importUsers(ImportUserReq req) {
+    public ImportUserResp importUsers(ImportUserReq req) {
+        if (req.getUserList().size() > USER_INMPORT_MAX_LIMIT) {
+            throw new BusinessException(UserExceptionEnum.OUT_BOUND_IMPORT_LIMIT );
+        }
+
+        ImportUserResp resp =new ImportUserResp();
+        List<String> errUserName =new ArrayList<>();
         req.getUserList().forEach(e -> {
             User user = UserAdapter.importUserSave(e);
-            userDao.save(user);
+
+            boolean save =userDao.save(user);
+            if (!save) {
+                errUserName.add(e.getUserName());
+            }
         });
+        resp.setErrorImportUserNames(errUserName);
+        return resp;
     }
 }
